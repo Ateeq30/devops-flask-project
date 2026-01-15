@@ -48,4 +48,4 @@ jobs:
       run: |
         kubectl apply -f ./flask-deployment.yml   # Make sure this path matches your repo
         kubectl rollout status deployment/flask-deployment
-i
+
