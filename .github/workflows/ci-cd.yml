@@ -42,7 +42,7 @@ jobs:
         kubectl apply -f k8s/deployment-flask.yml 
         kubectl rollout status deployment/flask-deployment 
 
-=======
+
 
     - name: Build and push Docker image
       run: |
@@ -63,5 +63,5 @@ jobs:
       run: |
         kubectl apply -f k8s/deployment-flask.yml 
         kubectl rollout status deployment/flask-deployment 
->>>>>>> f827120 (Check now)
+ f827120 (Check now)
 
