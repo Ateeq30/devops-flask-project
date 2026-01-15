@@ -1,3 +1,4 @@
+ HEAD
 name: CI-CD Pipeline
 
 on:
@@ -6,16 +7,51 @@ on:
 
 jobs:
   build:
+
+name: Flask CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+ 2741fb6 (Add CI/CD pipeline)
     runs-on: ubuntu-latest
     steps:
+ HEAD
     - uses: actions/checkout@v4
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+ 2741fb6 (Add CI/CD pipeline)
 
     - name: Login to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     - name: Build Docker image
+ HEAD
       run: docker build -t guftgu/devops-flask-ap:${{ github.run_number }} .
 
     - name: Push Docker image
       run: docker push guftgu/devops-flask-ap:${{ github.run_number }}
+
+      run: docker build -t guftgu/devops-flask-app:latest .
+
+    - name: Push Docker image
+      run: docker push guftgu/devops-flask-app:latest
+
+    - name: Setup kubectl
+      uses: azure/setup-kubectl@v3
+
+    - name: Configure kubeconfig
+      run: |
+        echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > kubeconfig
+        export KUBECONFIG=$PWD/kubeconfig
+
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl set image deployment/flask-deployment flask=guftgu/devops-flask-app:latest -n dev
+ 2741fb6 (Add CI/CD pipeline)
 
