@@ -1,51 +1,34 @@
-name: CI/CD
+name: CI-CD Flask App
 
-# Trigger workflow on push to main branch
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+  deploy:
+    runs-on: self-hosted
 
     steps:
-    # Step 1: Checkout the code from GitHub
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Step 2: Set up Docker Buildx (required for building images)
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+    - name: Login to Docker Hub
+      run: |
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-    # Step 3: Log in to Docker Hub
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}  # Your Docker Hub username stored as GitHub secret
-        password: ${{ secrets.DOCKER_PASSWORD }}  # Your Docker Hub password stored as GitHub secret
-
-    # Step 4: Build and push Docker image
-    - name: Build and push Docker image
+    - name: Build Docker image
       run: |
         docker build -t guftgu/devops-flask-app:v1 .
+
+    - name: Push Docker image
+      run: |
         docker push guftgu/devops-flask-app:v1
 
-    # Step 5: Set up kubectl
-    - name: Set up kubectl
-      uses: azure/setup-kubectl@v3
-      with:
-        version: 'latest'
-
-    # Step 6: Configure kubeconfig for GitHub Actions
-    - name: Configure kubeconfig
-      run: |
-        echo "${{ secrets.KUBECONFIG_DATA }}" > kubeconfig.yaml
-        export KUBECONFIG=$PWD/kubeconfig.yaml
-
-    # Step 7: Deploy to Kubernetes
     - name: Deploy to Kubernetes
       run: |
-        kubectl apply -f ./flask-deployment.yml   # Make sure this path matches your repo
-        kubectl rollout status deployment/flask-deployment
+        kubectl apply -f flask-deployment.yml
+        kubectl apply -f flask-service.yml
+        kubectl rollout status deployment/flask-deployment 
+
 
