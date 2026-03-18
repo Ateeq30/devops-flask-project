@@ -31,4 +31,4 @@ jobs:
     - name: Deploy to Kubernetes
       run: |
         kubectl apply -f deployment.yml
-        kubectl rollout status deployment/deployment
+        kubectl rollout status deployment/flask-deployment
