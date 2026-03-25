@@ -15,6 +15,7 @@ spec:
       containers:
       - name: flask
         image: guftgu/devops-flask-app:v1
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
-          imagePullPolicy: Always
+          
