@@ -17,3 +17,4 @@ spec:
         image: guftgu/devops-flask-app:v1
         ports:
         - containerPort: 5000
+          imagePullPolicy: Always
